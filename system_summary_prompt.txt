@@ -1,0 +1,99 @@
+
+# Prompt for "IT Third Party Document Management System"
+
+## 1. System Overview & Core Concept
+Build a web application called "IT Third Party Document Management System". This system will manage the entire lifecycle of engaging with third-party IT vendors, from initial selection to contract termination. It's a workflow-driven platform designed to ensure compliance, assess risk, and track performance through a series of standardized forms.
+
+## 2. User Roles & Permissions
+The system must support three distinct user roles:
+- **Assessor:** Responsible for filling out and submitting assessment forms for assigned projects. They can save their work as a draft.
+- **Reviewer:** Responsible for reviewing forms submitted by Assessors. They can approve or reject submissions and must provide comments for rejections.
+- **Admin:** Has full oversight. They can create projects, manage users (create, edit, delete), and view all system-wide dashboards and reports.
+
+## 3. Core Entities
+- **Users:** Each user must have a full name, username, password, role, and a department.
+- **Projects:** Each project represents an engagement with a specific third-party vendor. It must have a name, description, an assigned Assessor, and an assigned Reviewer. The system should store the department of both the Assessor and Reviewer with the project details.
+- **Forms:** The system is based on a series of 9 distinct forms, each tied to a project.
+- **Form Submissions:** Each form within a project has a status: 'Not Started', 'Draft', 'Pending Review', 'Approved', or 'Rejected'. Submissions store the form data, timestamps, and reviewer comments.
+
+## 4. UI/UX & General Layout
+- **Authentication:**
+  - Create a login page with fields for username and password.
+  - The page should have a two-column layout. The left side is for the login form.
+  - The title should be "IT Third Party" on the first line, and "Document Management" on a second, slightly smaller line.
+  - The right side must display a vertical "IT Third Party Workflow" diagram. This diagram should list the 10 key stages of the process. When a user hovers over a stage, a tooltip must appear showing a more detailed description in Thai.
+- **Main Application Layout:**
+  - Once logged in, the app should have a persistent sidebar on the left and a header at the top.
+  - The main content area should be in the center.
+  - The layout should be responsive and use a wide container (`max-w-7xl`).
+
+## 5. Sidebar Navigation
+The sidebar should contain:
+- The user's name, department, and role.
+- Navigation links:
+  - "Overall Dashboard"
+  - "My Projects"
+  - "Satisfaction Dashboard" (Visible to Admins only)
+  - "Admin Panel" (Visible to Admins only)
+- A "Logout" button fixed at the bottom.
+
+## 6. Dashboards
+### 6.1. Overall Dashboard
+This is the main landing page and should provide a high-level summary of the entire system.
+- **Overall Forms Status:** Display a doughnut chart visualizing the distribution of all form statuses (Approved, Pending Review, etc.) across all projects assigned to the current user. The center of the chart must show the total form count. A legend next to it should show the count and percentage for each status.
+- **IT Third Party Workflow Status:** Display the 10-step workflow diagram. Each step's icon must dynamically change color and icon based on the aggregated status of its corresponding forms across all projects (e.g., green check for all approved, yellow clock if any are pending). Hovering over a step must show a tooltip with a detailed count for each status.
+- **Management Reports:** A section with several report widgets:
+  - Cards showing the total count of registered "IT Third Parties", "IT Fourth Parties", and "Data Sets".
+  - A report showing the number of projects at each risk level (High, Medium, Low).
+  - A detailed report on "Significant Projects", breaking down how many projects meet criteria such as high-value contracts (>10M THB), access to customer/company data, use of cloud computing, and impact on critical systems.
+  - A report listing all third-party contracts expiring within the next 90 days.
+  - A report listing all terminated contracts.
+
+### 6.2. My Projects Page
+- This page should be a dedicated menu item.
+- It must display a list of all projects assigned to the current user.
+- Each item in the list should show the project's name, description, and the assigned Assessor and Reviewer, including their respective departments.
+- Admins must see a "+ New Project" button on this page, which opens a modal to create a new project and assign an Assessor and Reviewer from a dropdown list of users.
+
+## 7. Project & Form Workflow
+### 7.1. Project Details Page
+- Clicking a project from the "My Projects" list navigates here.
+- It should display the project's name, description, and the full names and departments of the Assessor and Reviewer.
+- It must list all 9 forms associated with the project. Each form in the list should have a colored status badge next to it (e.g., 'Pending Review' is yellow).
+### 7.2. Form Interaction
+- Clicking a form from the project details list opens the full form view.
+- **For Assessors:** They can only edit forms with 'Not Started', 'Draft', or 'Rejected' status. The form should be fully editable.
+- **For Reviewers:** They can only interact with forms in 'Pending Review' status. The form content must be read-only, but a special "Review Actions" panel must appear at the top. This panel includes a text area for comments and "Approve" and "Reject" buttons. The "Reject" button is disabled until a comment is entered.
+- **Read-Only View:** For all other statuses or users, the form is displayed in a read-only view. If the form was rejected, the reviewer's notes are displayed at the top.
+
+## 8. Specific Form: 01. Capability Assessment
+This is the most complex form and requires specific features:
+- **Structure:** It's a large table-based form with 13 main topics. Topics 1-3 have sub-topics that must be rendered as individual, indented rows for separate evaluation. Topics 4-13 are single rows. All table cell content should be vertically aligned to the top.
+- **Evaluation Columns:** Each evaluatable row must have:
+  - **ผลการพิจารณา (Result):** A dropdown with options: 'Pass', 'Pass with condition', 'Not Pass', 'Not Applicable'. The dropdown's background must be conditionally colored: yellow for 'Pass with condition', red for 'Not Pass', and gray for 'Not Applicable'.
+  - **เหตุผลประกอบ (Reason):** A text area.
+  - **เอกสารอ้างอิง (Reference Document):** A file upload button. When a file is uploaded, its name should be displayed with an option to remove it. This column and the text area columns should be wide enough for easy data entry.
+  - **ให้ความเห็น (ผู้สอบทาน) (Reviewer Comment):** A text area.
+- **Logic & Validation:**
+  - **Average Score:** An average score must be calculated at the bottom of the form based on the results (Pass=5, Pass with condition=3, Not Pass=0). The result should be displayed as a percentage.
+  - The score should only be calculated and displayed if ALL evaluation rows have a result selected. Otherwise, it should display a message "กรุณากรอกให้ครบ" (Please complete all fields).
+  - If ANY row has a result of 'Not Pass', the average score's background must turn red, and the "Submit for Review" button must be disabled.
+- **Actions & Footer:**
+  - The form must have three action buttons in the footer: "Save as Draft", "Submit for Review", and "PDF Review".
+  - **PDF Review Button:** This button is only enabled when all required fields on the form (header, all results, summary, and assessor signature) are complete. Clicking it should trigger the browser's print function and render a clean, print-friendly version of the form, hiding all UI elements like buttons and input fields.
+  - A form identifier code ("รหัสแบบฟอร์ม ITD-2025-THP001") must be displayed on the bottom-left of the form and its print version.
+
+## 9. Admin Panel
+- This page is accessible only to Admins.
+- It must feature a "User Management" section.
+- Display a table of all users showing their Full Name, Username, Department, and Role.
+- Provide "Edit" and "Delete" buttons for each user.
+- Include a "+ Add User" button that opens a modal to create a new user with all required fields (Name, Username, Password, Department, Role).
+
+## 10. Satisfaction Survey Module
+- **Submission:** On the Project Details page, there should be a section for "Satisfaction Surveys" (hidden from Reviewers) with a button to "+ Submit Survey". This opens a dedicated survey form.
+- **Satisfaction Dashboard:** (Admin only)
+  - This page must be a dedicated menu item.
+  - It should display aggregate statistics, such as average scores for overall satisfaction, communication, etc.
+  - It must include a doughnut chart showing the distribution of overall scores (1-5 stars) from all submissions, with a corresponding legend.
+  - It must display a table listing all individual survey submissions, with actions to view details or delete a submission.
