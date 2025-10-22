@@ -1,4 +1,5 @@
 export type FormKey = 
+  | 'serviceApproval'
   | 'capability'
   | 'security'
   | 'registration'
@@ -97,14 +98,23 @@ export interface DetailedCapabilityAssessmentData {
   };
 }
 
+export type Page = 'dashboard' | 'project' | 'admin' | 'submitSurvey' | 'satisfactionDashboard' | 'myProjects' | 'dataDefinition' | 'overallDocuments' | 'serviceApproval'
+  // New pages for Admin Menu
+  | 'policiesAndRegulations'
+  | 'manualsAndDocuments'
+  | 'itThirdPartyRegister'
+  | 'fourthPartyRegister'
+  | 'dataSetRegister'
+  | 'fourthPartyFormSet'
+  | 'dataSetFormSet';
+
+
+// FIX: Add SearchResult interface to resolve import error in GlobalSearchPage.tsx.
 export interface SearchResult {
   project: Project;
-  matchContext: string; // e.g., "Project Name", "Registration Form (companyName)"
-  matchedValue: string; // The actual data that matched the search
+  matchContext: string;
+  matchedValue: string;
 }
-
-
-export type Page = 'dashboard' | 'project' | 'admin' | 'submitSurvey' | 'satisfactionDashboard' | 'myProjects' | 'dataDefinition' | 'overallDocuments';
 
 
 // New types for dynamic forms
@@ -113,9 +123,7 @@ export type InputType = 'text' | 'textarea' | 'date' | 'checkbox' | 'select' | '
 export interface SubTopic {
   no: string;
   topic: string; // This is the label
-  // FIX: Made `details` property optional to resolve type conflicts with `Topic` type.
   details?: string; // This is help text or description
-  // FIX: Made fieldKey optional to support form definitions where subtopics are for display only.
   fieldKey?: string; // e.g., 'companyName'
   inputType?: InputType;
   options?: string[];
@@ -137,6 +145,9 @@ export interface FormDefinition {
   key: FormKey;
   label: string;
   topics: Topic[];
+  isEditable?: boolean;
+  hasSignatures?: boolean;
+  isStructureLocked?: boolean;
 }
 
 export type FormDefinitions = {

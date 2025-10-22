@@ -209,7 +209,7 @@ const CapabilityAssessmentForm: React.FC<Props> = ({
                 type="button"
                 onClick={() => window.print()}
                 disabled={!isFormComplete || isReadOnly}
-                className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-300 ease-in-out disabled:bg-gray-200 disabled:cursor-not-allowed disabled:text-gray-400"
+                className="inline-flex items-center justify-center px-5 py-2.5 border border-gray-300 text-base font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-300 ease-in-out disabled:bg-gray-200 disabled:cursor-not-allowed disabled:text-gray-400"
             >
                 PDF Review
             </button>
@@ -219,14 +219,14 @@ const CapabilityAssessmentForm: React.FC<Props> = ({
                     type="button"
                     onClick={handleSaveDraft}
                     disabled={isSavingDraft || isSubmitting}
-                    className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 ease-in-out disabled:bg-gray-200 disabled:cursor-not-allowed"
+                    className="inline-flex items-center justify-center px-5 py-2.5 border border-gray-300 text-base font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 ease-in-out disabled:bg-gray-200 disabled:cursor-not-allowed"
                 >
                     {isSavingDraft ? 'Saving...' : 'Save as Draft'}
                 </button>
                 <button
                     type="submit"
                     disabled={isSubmitting || hasNotPass || isSavingDraft}
-                    className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 ease-in-out disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    className="inline-flex items-center justify-center px-5 py-2.5 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 ease-in-out disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                     {isSubmitting ? 'Submitting...' : "Submit for Review"}
                 </button>
@@ -271,13 +271,13 @@ const CapabilityAssessmentForm: React.FC<Props> = ({
                 <table className="min-w-full border-collapse border border-gray-300 text-sm text-black table-fixed">
                     <thead className="bg-gray-100 text-center font-semibold">
                         <tr>
-                            <th className="border border-gray-300 p-2 w-[4%]">No.</th>
-                            <th className="border border-gray-300 p-2 w-[13%]">หัวข้อการประเมิน</th>
-                            <th className="border border-gray-300 p-2 w-[18%]">รายละเอียดที่ควรพิจารณา</th>
-                            <th className="border border-gray-300 p-2 w-[12%]">ผลการพิจารณา</th>
-                            <th className="border border-gray-300 p-2 w-[20%]">เหตุผลประกอบ</th>
-                            <th className="border border-gray-300 p-2 w-[13%]">เอกสารอ้างอิง</th>
-                            <th className="border border-gray-300 p-2 w-[20%]">ให้ความเห็น (ผู้สอบทาน)</th>
+                            <th className="border border-gray-300 p-1.5 w-[4%]">No.</th>
+                            <th className="border border-gray-300 p-1.5 w-[13%]">หัวข้อการประเมิน</th>
+                            <th className="border border-gray-300 p-1.5 w-[18%]">รายละเอียดที่ควรพิจารณา</th>
+                            <th className="border border-gray-300 p-1.5 w-[12%]">ผลการพิจารณา</th>
+                            <th className="border border-gray-300 p-1.5 w-[20%]">เหตุผลประกอบ</th>
+                            <th className="border border-gray-300 p-1.5 w-[13%]">เอกสารอ้างอิง</th>
+                            <th className="border border-gray-300 p-1.5 w-[20%]">ให้ความเห็น (ผู้สอบทาน)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -286,18 +286,18 @@ const CapabilityAssessmentForm: React.FC<Props> = ({
                                 {mainTopic.subTopics && mainTopic.subTopics.length > 0 ? (
                                     <>
                                         <tr className="bg-gray-200 font-bold">
-                                            <td className="border border-gray-300 p-2 text-center align-top">{mainTopic.no}</td>
-                                            <td colSpan={6} className="border border-gray-300 p-2 align-top">{mainTopic.topic}</td>
+                                            <td className="border border-gray-300 p-1.5 text-center align-top">{mainTopic.no}</td>
+                                            <td colSpan={6} className="border border-gray-300 p-1.5 align-top">{mainTopic.topic}</td>
                                         </tr>
                                         {mainTopic.subTopics.map((subTopic) => {
                                             const currentIndex = rowIndex++;
                                             const result = formData.assessmentRows[currentIndex]?.result;
                                             return (
                                                 <tr key={subTopic.no}>
-                                                    <td className="border border-gray-300 p-2 text-right align-top">{subTopic.no}</td>
-                                                    <td className="border border-gray-300 p-2 pl-8 align-top">{subTopic.topic}</td>
-                                                    <td className="border border-gray-300 p-2 whitespace-pre-wrap align-top">{subTopic.details}</td>
-                                                    <td className="border border-gray-300 p-2 align-top">
+                                                    <td className="border border-gray-300 p-1.5 text-right align-top">{subTopic.no}</td>
+                                                    <td className="border border-gray-300 p-1.5 pl-8 align-top">{subTopic.topic}</td>
+                                                    <td className="border border-gray-300 p-1.5 whitespace-pre-wrap align-top">{subTopic.details}</td>
+                                                    <td className="border border-gray-300 p-1.5 align-top">
                                                         <select 
                                                             value={result || 'ระบุ--'} 
                                                             onChange={e => handleRowChange(currentIndex, 'result', e.target.value)}
@@ -315,10 +315,10 @@ const CapabilityAssessmentForm: React.FC<Props> = ({
                                                             <option>Not Applicable</option>
                                                         </select>
                                                     </td>
-                                                    <td className="border border-gray-300 p-2 align-top">
+                                                    <td className="border border-gray-300 p-1.5 align-top">
                                                         <TextArea rows={3} value={formData.assessmentRows[currentIndex]?.reason || ''} onChange={e => handleRowChange(currentIndex, 'reason', e.target.value)} disabled={isReadOnly} />
                                                     </td>
-                                                    <td className="border border-gray-300 p-2 align-top text-center">
+                                                    <td className="border border-gray-300 p-1.5 align-top text-center">
                                                         {isReadOnly ? (
                                                             <span className="text-xs break-all">{formData.assessmentRows[currentIndex]?.reference || '-'}</span>
                                                         ) : (
@@ -354,7 +354,7 @@ const CapabilityAssessmentForm: React.FC<Props> = ({
                                                             </div>
                                                         )}
                                                     </td>
-                                                    <td className="border border-gray-300 p-2 align-top">
+                                                    <td className="border border-gray-300 p-1.5 align-top">
                                                         <TextArea rows={3} value={formData.assessmentRows[currentIndex]?.comment || ''} onChange={e => handleRowChange(currentIndex, 'comment', e.target.value)} disabled={isReadOnly} />
                                                     </td>
                                                 </tr>
@@ -367,10 +367,10 @@ const CapabilityAssessmentForm: React.FC<Props> = ({
                                         const result = formData.assessmentRows[currentIndex]?.result;
                                         return (
                                             <tr key={mainTopic.no}>
-                                                <td className="border border-gray-300 p-2 text-center font-semibold align-top">{mainTopic.no}</td>
-                                                <td className="border border-gray-300 p-2 font-semibold align-top">{mainTopic.topic}</td>
-                                                <td className="border border-gray-300 p-2 whitespace-pre-wrap align-top">{mainTopic.details}</td>
-                                                <td className="border border-gray-300 p-2 align-top">
+                                                <td className="border border-gray-300 p-1.5 text-center font-semibold align-top">{mainTopic.no}</td>
+                                                <td className="border border-gray-300 p-1.5 font-semibold align-top">{mainTopic.topic}</td>
+                                                <td className="border border-gray-300 p-1.5 whitespace-pre-wrap align-top">{mainTopic.details}</td>
+                                                <td className="border border-gray-300 p-1.5 align-top">
                                                     <select 
                                                         value={result || 'ระบุ--'} 
                                                         onChange={e => handleRowChange(currentIndex, 'result', e.target.value)}
@@ -388,10 +388,10 @@ const CapabilityAssessmentForm: React.FC<Props> = ({
                                                         <option>Not Applicable</option>
                                                     </select>
                                                 </td>
-                                                <td className="border border-gray-300 p-2 align-top">
+                                                <td className="border border-gray-300 p-1.5 align-top">
                                                     <TextArea rows={3} value={formData.assessmentRows[currentIndex]?.reason || ''} onChange={e => handleRowChange(currentIndex, 'reason', e.target.value)} disabled={isReadOnly} />
                                                 </td>
-                                                <td className="border border-gray-300 p-2 align-top text-center">
+                                                <td className="border border-gray-300 p-1.5 align-top text-center">
                                                     {isReadOnly ? (
                                                         <span className="text-xs break-all">{formData.assessmentRows[currentIndex]?.reference || '-'}</span>
                                                     ) : (
@@ -427,7 +427,7 @@ const CapabilityAssessmentForm: React.FC<Props> = ({
                                                         </div>
                                                     )}
                                                 </td>
-                                                <td className="border border-gray-300 p-2 align-top">
+                                                <td className="border border-gray-300 p-1.5 align-top">
                                                     <TextArea rows={3} value={formData.assessmentRows[currentIndex]?.comment || ''} onChange={e => handleRowChange(currentIndex, 'comment', e.target.value)} disabled={isReadOnly} />
                                                 </td>
                                             </tr>
@@ -501,7 +501,7 @@ const CapabilityAssessmentForm: React.FC<Props> = ({
                     {/* Assessor Column */}
                     <div>
                         <h3 className="text-lg font-bold text-black mb-4 text-center">ผู้ประเมิน</h3>
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             <div>
                                 <label className="block text-sm font-medium text-black mb-1">ผู้ประเมิน</label>
                                 <TextInput value={formData.assessorSignature?.name || ''} onChange={e => handleSignatureChange('assessorSignature', 'name', e.target.value)} disabled={isReadOnly} placeholder="(................)"/>
@@ -523,7 +523,7 @@ const CapabilityAssessmentForm: React.FC<Props> = ({
                     {/* Reviewer Column */}
                     <div>
                         <h3 className="text-lg font-bold text-black mb-4 text-center">ผู้สอบทาน</h3>
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             <div>
                                 <label className="block text-sm font-medium text-black mb-1">ผู้สอบทาน</label>
                                 <TextInput value={formData.reviewerSignature?.name || ''} disabled={true} placeholder="(................)"/>

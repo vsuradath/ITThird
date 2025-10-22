@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormStatus } from '../../types';
+import { FormStatus, FormKey } from '../../types';
 import { CheckIcon } from '../icons/CheckIcon';
 import { ClockIcon } from '../icons/ClockIcon';
 import { XCircleIcon } from '../icons/XCircleIcon';
@@ -13,6 +13,38 @@ const STATUS_VISUALS: Record<FormStatus, { color: string; icon: React.FC<React.S
     'Draft': { color: 'bg-blue-500', icon: PencilIcon },
     'Not Started': { color: 'bg-gray-400', icon: () => <div className="w-2.5 h-2.5 bg-gray-400 rounded-full"></div> },
     'Completed': { color: 'bg-gray-600', icon: CheckIcon },
+};
+
+const FormattedPopupContent: React.FC<{ content: string }> = ({ content }) => {
+  const lines = content.split('\n').filter(line => line.trim() !== '');
+
+  return (
+    <div className="text-black text-left text-sm">
+      {lines.map((line, index) => {
+        const headerRegex = /^([A-D]\))/;
+        const noteRegex = /^หมายเหตุ/;
+        const listItemRegex = /^- /;
+        const subHeaderRegex = /^\s*ทุกรายที่เป็น Short-list ดังนี้/;
+
+        if (headerRegex.test(line)) {
+          return <p key={index} className="font-bold text-gray-800 mt-3 mb-1 first:mt-0">{line}</p>;
+        }
+        if (noteRegex.test(line)) {
+          return <p key={index} className="mt-2 text-xs text-yellow-800 bg-yellow-100 p-2 rounded">{line}</p>;
+        }
+        if (listItemRegex.test(line)) {
+          return <p key={index} className="ml-4 pl-2 text-gray-600 border-l border-gray-300">{line.substring(1).trim()}</p>;
+        }
+        if (subHeaderRegex.test(line)) {
+          return <p key={index} className="ml-2 text-sm text-gray-700">{line.trim()}</p>;
+        }
+        if (index === 0) {
+            return <p key={index} className="font-semibold text-gray-900 mb-2">{line}</p>;
+        }
+        return <p key={index} className="text-gray-700">{line}</p>;
+      })}
+    </div>
+  );
 };
 
 // Define aggregate step status logic
@@ -46,6 +78,8 @@ export interface WorkflowStepStatus {
   description: string;
   counts: Record<FormStatus, number>;
   totalProjects: number;
+  // FIX: Added formKey to the interface to match its usage in the component.
+  formKey: FormKey | null;
 }
 
 interface Props {
@@ -68,6 +102,8 @@ const ChevronStep: React.FC<{
     
     const arrowWidth = 20;
 
+    const displayTitle = step.title.split('\n')[0];
+
     let clipPathStyle = '';
     if (isFirst && isLast) {
         clipPathStyle = `polygon(0 0, 100% 0, 100% 100%, 0 100%)`; // rectangle for single item
@@ -78,6 +114,8 @@ const ChevronStep: React.FC<{
     } else {
         clipPathStyle = `polygon(${arrowWidth}px 0, calc(100% - ${arrowWidth}px) 0, 100% 50%, calc(100% - ${arrowWidth}px) 100%, ${arrowWidth}px 100%, 0 50%)`;
     }
+
+    const isFormattedDescription = step.description.includes('\n') || step.description.length > 100;
     
     return (
         <div 
@@ -92,27 +130,47 @@ const ChevronStep: React.FC<{
             <div className={`relative flex items-center p-2 transition-transform duration-200 group-hover:scale-105 ${visuals.textColor}`} style={{ zIndex: 21 - index }}>
                 <IconComponent className="w-5 h-5 mr-2 shrink-0" />
                 <div className="text-left">
-                    <p className="text-xs font-bold">{step.title}</p>
+                    <p className="text-xs font-bold">{displayTitle}</p>
                 </div>
             </div>
             
             {/* Tooltip */}
-            <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-60 p-3 bg-slate-800 text-white text-sm rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300 z-50 pointer-events-none">
-                <p className="font-bold border-b border-slate-600 pb-1">{step.title}</p>
-                {step.totalProjects > 0 && relevantStatuses.length > 0 ? (
-                    <ul className="space-y-1 mt-2">
-                        {relevantStatuses.map(status => (
-                            <li key={status} className="flex items-center">
-                                <span className={`w-3 h-3 rounded-full mr-2 ${STATUS_VISUALS[status].color}`}></span>
-                                <span>{status}: {step.counts[status]}</span>
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p className="text-gray-400 mt-2">{ index === 0 ? "Initial process step" : "No projects in this stage."}</p>
+            <div className={`absolute bottom-full mb-3 left-1/2 -translate-x-1/2 p-3 text-sm rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300 z-50 pointer-events-none ${
+                isFormattedDescription
+                    ? 'w-[40rem] max-w-2xl bg-white border border-gray-200'
+                    : 'w-60 bg-slate-800 text-white'
+            }`}>
+                <p className={`font-bold pb-2 mb-2 ${isFormattedDescription ? 'border-b border-gray-200 text-black' : 'border-b border-slate-600 text-white'}`}>{displayTitle}</p>
+                
+                <div className="mb-2">
+                    {isFormattedDescription 
+                        ? <FormattedPopupContent content={step.description} />
+                        : <p className={isFormattedDescription ? 'text-black' : 'text-gray-300'}>{step.description}</p>
+                    }
+                </div>
+
+                {step.formKey && (
+                    <div className={`mt-3 pt-3 ${isFormattedDescription ? 'border-t border-gray-200' : 'border-t border-slate-600'}`}>
+                        <p className={`font-semibold text-xs uppercase tracking-wider mb-2 ${isFormattedDescription ? 'text-gray-500' : 'text-gray-300'}`}>Project Statuses</p>
+                        {step.totalProjects > 0 && relevantStatuses.length > 0 ? (
+                            <ul className="space-y-1">
+                                {relevantStatuses.map(status => (
+                                    <li key={status} className="flex items-center">
+                                        <span className={`w-3 h-3 rounded-full mr-2 ${STATUS_VISUALS[status].color}`}></span>
+                                        <span className={isFormattedDescription ? 'text-gray-700' : 'text-white'}>{status}: {step.counts[status]}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-gray-400 mt-1">No projects in this stage.</p>
+                        )}
+                    </div>
                 )}
+                
                 {/* Arrow */}
-                <div className="absolute top-full left-1/2 -translate-x-1/2 w-3 h-3 bg-slate-800 rotate-45"></div>
+                <div className={`absolute top-full left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 ${
+                    isFormattedDescription ? 'bg-white border-b border-r border-gray-200' : 'bg-slate-800'
+                }`}></div>
             </div>
         </div>
     );

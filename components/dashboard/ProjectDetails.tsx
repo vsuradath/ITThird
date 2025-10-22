@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Project, FormKey, FormSubmission, FormDefinition } from '../../types';
+import { Project, FormKey } from '../../types';
 import { AppContext } from '../../context/AppContext';
 import { FORMS } from '../../constants';
 import StatusBadge from '../common/Badge';
@@ -8,12 +8,7 @@ import StatusBadge from '../common/Badge';
 import CapabilityAssessmentForm from '../forms/CapabilityAssessmentForm';
 import SecurityMeasuresForm from '../forms/SecurityMeasuresForm';
 import RegistrationForm from '../forms/RegistrationForm';
-import RiskAssessmentForm from '../forms/RiskAssessmentForm';
-import ContractTermsForm from '../forms/ContractTermsForm';
-import PerformanceMonitoringForm from '../forms/PerformanceMonitoringForm';
-import TerminationForm from '../forms/TerminationForm';
-import PerformanceEvaluationForm from '../forms/PerformanceEvaluationForm';
-import DataProtectionForm from '../forms/DataProtectionForm';
+import GenericForm from '../forms/GenericForm';
 import { StarIcon } from '../icons/StarIcon';
 
 interface Props {
@@ -25,10 +20,14 @@ const ProjectDetails: React.FC<Props> = ({ project }) => {
   const [activeFormKey, setActiveFormKey] = useState<FormKey | null>(null);
   const [reviewComments, setReviewComments] = useState('');
 
-  if (!currentUser) return null;
+  if (!currentUser || !formDefinitions) return null;
 
   const isAssessor = currentUser.role === 'assessor' && currentUser.id === project.assessorId;
   const isReviewer = currentUser.role === 'reviewer' && currentUser.id === project.reviewerId;
+
+  const serviceApprovalSubmission = getProjectFormStatus(project.id, 'serviceApproval');
+  const isServiceRequestApproved = serviceApprovalSubmission?.status === 'Approved';
+
 
   // Get surveys for this project
   const projectSurveys = getSurveysForProject(project.id);
@@ -48,7 +47,15 @@ const ProjectDetails: React.FC<Props> = ({ project }) => {
   };
 
   const renderForm = (formKey: FormKey, readOnly: boolean, initialData?: any, reviewProps: any = {}) => {
-    const definition = formDefinitions?.[formKey];
+    const commonProps = {
+        initialData: initialData || {},
+        isReadOnly: readOnly,
+        onSubmit: handleFormSubmit,
+        onSaveDraft: handleSaveDraft,
+        ...reviewProps
+    };
+    
+    const definition = formDefinitions[formKey];
 
     if (!definition) {
       return (
@@ -61,36 +68,31 @@ const ProjectDetails: React.FC<Props> = ({ project }) => {
       );
     }
 
-    // Universal props for all forms
-    const baseProps = {
-        initialData: initialData || {},
-        isReadOnly: readOnly,
-        definition,
-        ...reviewProps
-    };
-
-    // Props specific to forms that can be saved as drafts or submitted
-    const editableFormProps = {
-        ...baseProps,
-        onSubmit: handleFormSubmit,
-        onSaveDraft: handleSaveDraft,
-    };
+    const definitionProps = { ...commonProps, definition };
 
     switch (formKey) {
-      case 'capability': return <CapabilityAssessmentForm {...editableFormProps} />;
-      case 'security': return <SecurityMeasuresForm {...editableFormProps} />;
-      case 'registration': return <RegistrationForm {...editableFormProps} />;
-      case 'risk': return <RiskAssessmentForm {...editableFormProps} />;
-      case 'contract': return <ContractTermsForm {...editableFormProps} />;
-      case 'monitoring': return <PerformanceMonitoringForm {...editableFormProps} />;
-      case 'termination': return <TerminationForm {...editableFormProps} />;
-      case 'evaluation': return <PerformanceEvaluationForm {...editableFormProps} />;
-      case 'dataProtection': return <DataProtectionForm {...editableFormProps} />;
-      default: return null;
+      case 'capability': 
+        return <CapabilityAssessmentForm {...definitionProps} />;
+      case 'security': 
+        return <SecurityMeasuresForm {...definitionProps} />;
+      case 'registration': 
+        return <RegistrationForm {...definitionProps} />;
+      // All other forms use the generic renderer
+      case 'serviceApproval':
+      case 'risk':
+      case 'contract':
+      case 'monitoring':
+      case 'termination':
+      case 'evaluation':
+      case 'dataProtection':
+        return <GenericForm {...definitionProps} />;
+      default: 
+        return null;
     }
   };
 
-  const handleFormClick = (formKey: FormKey, submission?: FormSubmission) => {
+  const handleFormClick = (formKey: FormKey) => {
+     const submission = getProjectFormStatus(project.id, formKey);
      const status = submission?.status || 'Not Started';
 
      if(isAssessor && (status === 'Not Started' || status === 'Rejected' || status === 'Draft')) {
@@ -103,7 +105,8 @@ const ProjectDetails: React.FC<Props> = ({ project }) => {
         setActiveFormKey(formKey);
         return;
      }
-
+     
+     // Allow anyone to view a submitted/approved form
      if (submission) {
         setActiveFormKey(formKey);
      }
@@ -173,25 +176,50 @@ const ProjectDetails: React.FC<Props> = ({ project }) => {
         </div>
 
         <div className="space-y-3">
-          {FORMS.map(form => {
+          {/* Always show service approval form */}
+          {FORMS.filter(f => f.key === 'serviceApproval').map(form => {
             const submission = getProjectFormStatus(project.id, form.key);
             const status = submission?.status || 'Not Started';
 
             return (
               <div
                 key={form.key}
-                onClick={() => handleFormClick(form.key, submission)}
+                onClick={() => handleFormClick(form.key)}
                 className="flex justify-between items-center p-4 border rounded-md cursor-pointer hover:bg-gray-50 transition-colors"
               >
-                <span className="font-medium text-gray-700">{formDefinitions?.[form.key]?.label || form.label}</span>
+                <span className="font-medium text-gray-700">{formDefinitions[form.key]?.label || form.label}</span>
                 <StatusBadge status={status} />
               </div>
             );
           })}
+
+          {/* Conditionally show other forms */}
+          {isServiceRequestApproved ? (
+            FORMS.filter(f => f.key !== 'serviceApproval').map(form => {
+              const submission = getProjectFormStatus(project.id, form.key);
+              const status = submission?.status || 'Not Started';
+
+              return (
+                <div
+                  key={form.key}
+                  onClick={() => handleFormClick(form.key)}
+                  className="flex justify-between items-center p-4 border rounded-md cursor-pointer hover:bg-gray-50 transition-colors"
+                >
+                  <span className="font-medium text-gray-700">{formDefinitions[form.key]?.label || form.label}</span>
+                  <StatusBadge status={status} />
+                </div>
+              );
+            })
+          ) : (
+            <div className="text-center p-8 mt-4 border-2 border-dashed rounded-md bg-gray-50 text-gray-600">
+                <p className="font-semibold text-lg">Awaiting Service Request Approval</p>
+                <p className="mt-2">The remaining project forms will become available once the initial service request is approved by the reviewer.</p>
+            </div>
+          )}
         </div>
       </div>
       
-      {!isReviewer && (
+      {isServiceRequestApproved && !isReviewer && (
         <div className="mt-8 bg-white p-6 rounded-lg shadow-lg">
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-bold text-gray-800">Satisfaction Surveys</h3>

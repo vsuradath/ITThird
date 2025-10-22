@@ -68,12 +68,12 @@ const FormContainer: React.FC<FormContainerProps> = ({
 
   return (
     <div className={`bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 ease-in-out ${!isReadOnly && 'hover:shadow-2xl'}`}>
-      <div className="p-6 md:p-8">
-        <h2 className="text-2xl font-bold text-black mb-6 border-b-2 border-gray-100 pb-4">{title}</h2>
+      <div className="p-4">
+        <h2 className="text-xl font-bold text-black mb-3 border-b-2 border-gray-100 pb-2">{title}</h2>
         
         {isReviewMode && (
-          <div className="mb-6 p-4 border-2 border-yellow-400 bg-yellow-50 rounded-lg">
-            <h3 className="text-lg font-bold text-yellow-800">Review Actions</h3>
+          <div className="mb-4 p-3 border-2 border-yellow-400 bg-yellow-50 rounded-lg">
+            <h3 className="text-base font-bold text-yellow-800">Review Actions</h3>
             <div className="mt-2">
                 <label className="block text-sm font-medium text-black mb-1">Your Comments (Required for Rejection)</label>
                 <TextArea
@@ -83,10 +83,10 @@ const FormContainer: React.FC<FormContainerProps> = ({
                 />
             </div>
             <div className="mt-4 flex justify-end space-x-3">
-                <button type="button" onClick={onReject} disabled={!reviewComment?.trim()} className="px-5 py-2.5 font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-red-300">
+                <button type="button" onClick={onReject} disabled={!reviewComment?.trim()} className="px-4 py-2 font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-red-300">
                     Reject
                 </button>
-                <button type="button" onClick={onApprove} className="px-5 py-2.5 font-medium bg-green-600 text-white rounded-lg hover:bg-green-700">
+                <button type="button" onClick={onApprove} className="px-4 py-2 font-medium bg-green-600 text-white rounded-lg hover:bg-green-700">
                     Approve
                 </button>
             </div>
@@ -94,101 +94,92 @@ const FormContainer: React.FC<FormContainerProps> = ({
         )}
 
         {reviewerNotes && (
-             <div className="mb-6 p-4 text-sm text-yellow-800 bg-yellow-100 rounded-lg" role="alert">
-                <span className="font-bold">Reviewer Notes:</span> {reviewerNotes}
+             <div className="mb-4 p-3 text-sm text-yellow-900 bg-yellow-100 rounded-lg border border-yellow-200">
+                <h3 className="font-bold text-yellow-800 mb-2">Reviewer's Notes:</h3>
+                <p className="whitespace-pre-wrap">{reviewerNotes}</p>
             </div>
         )}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <fieldset disabled={isReadOnly} className="space-y-6">
-            {children}
+        
+        {draftSaved && (
+            <div className="mb-4 p-3 text-sm text-green-700 bg-green-100 rounded-lg" role="alert">
+                Draft saved successfully!
+            </div>
+        )}
 
-            {showFileUpload && (
-              <div className="border-t-2 border-gray-100 pt-6">
-                <label className="block text-sm font-medium text-black mb-2">
-                  แนบเอกสารที่เกี่ยวข้อง (ถ้ามี)
-                </label>
-                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                  <div className="space-y-1 text-center">
-                    <UploadIcon className="mx-auto h-12 w-12 text-gray-400" />
-                    <div className="flex text-sm text-gray-600">
-                      <label
-                        htmlFor="file-upload"
-                        className={`relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 ${isReadOnly ? 'text-gray-400' : ''}`}
-                      >
-                        <span>Upload a file</span>
-                        <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleFileChange} disabled={isReadOnly} />
-                      </label>
-                      <p className="pl-1">or drag and drop</p>
-                    </div>
-                    <p className="text-xs text-gray-500">PNG, JPG, PDF up to 10MB</p>
-                    {fileName && <p className="text-sm text-green-600 mt-2">Selected: {fileName}</p>}
-                  </div>
-                </div>
-              </div>
-            )}
-          </fieldset>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {children}
           
-          {!isReadOnly && (
-            footer ? footer : (
-              <div className="flex justify-end pt-4 space-x-3">
-                 {onSaveDraft && (
-                    <button
-                        type="button"
-                        onClick={onSaveDraft}
-                        disabled={isSavingDraft || isSubmitting}
-                        className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 ease-in-out disabled:bg-gray-200 disabled:cursor-not-allowed"
-                    >
-                        {isSavingDraft ? 'Saving Draft...' : 'Save as Draft'}
-                    </button>
-                )}
+          {showFileUpload && !isReadOnly && (
+            <div className="mt-5">
+              <label className="block text-sm font-medium text-black mb-1">Attach Supporting Documents</label>
+              <input type="file" id="file-upload" className="hidden" onChange={handleFileChange} />
+              <button
+                type="button"
+                className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 hover:bg-blue-50 transition-all duration-300 ease-in-out"
+                onClick={() => document.getElementById('file-upload')?.click()}
+              >
+                <UploadIcon className="mx-auto h-10 w-10 text-gray-400" />
+                <span className="mt-2 block text-sm font-medium text-gray-700">
+                  {fileName ? `File: ${fileName}` : 'Click to upload a file'}
+                </span>
+                <span className="mt-1 block text-xs text-gray-500">
+                  PDF, DOCX, XLSX up to 10MB
+                </span>
+              </button>
+            </div>
+          )}
+          
+          {!isReadOnly && !isReviewMode && (
+             <div className="flex flex-col sm:flex-row justify-end items-center gap-3 mt-6 pt-4 border-t">
+               {onSaveDraft && (
+                 <button
+                   type="button"
+                   onClick={onSaveDraft}
+                   disabled={isSavingDraft}
+                   className="w-full sm:w-auto px-5 py-2.5 font-medium bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                 >
+                   {isSavingDraft ? 'Saving...' : 'Save as Draft'}
+                 </button>
+               )}
                 <button
                   type="submit"
-                  disabled={isSubmitting || isSubmitDisabled || isSavingDraft}
-                  className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 ease-in-out disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  disabled={isSubmitting || isSubmitDisabled}
+                  className="w-full sm:w-auto px-5 py-2.5 font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-300"
                 >
-                  {isSubmitting ? 'Submitting...' : (submitButtonText || 'Submit for Review')}
+                  {isSubmitting ? 'Submitting...' : (submitButtonText || 'Submit')}
                 </button>
-              </div>
-            )
+             </div>
           )}
-
-           {isSubmitted && (
-                <div className="mt-4 p-4 text-sm text-green-700 bg-green-100 rounded-lg" role="alert">
-                    <span className="font-medium">Success!</span> Form has been submitted for review.
-                </div>
-            )}
-            {draftSaved && (
-                <div className="mt-4 p-4 text-sm text-blue-700 bg-blue-100 rounded-lg" role="alert">
-                    <span className="font-medium">Draft Saved!</span> You can continue editing later.
-                </div>
-            )}
+          {footer}
         </form>
       </div>
     </div>
   );
 };
 
-export const FormField: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
-    <div>
-        <label className="block text-sm font-medium text-black mb-1">{label}</label>
+interface FormFieldProps {
+  label: string;
+  children: React.ReactNode;
+  required?: boolean;
+  helpText?: string;
+}
+
+export const FormField: React.FC<FormFieldProps> = ({ label, children, required, helpText }) => (
+    <div className="mb-4">
+        <label className="block text-sm font-medium text-black">
+            {label} {required && <span className="text-red-500">*</span>}
+        </label>
         {children}
+        {helpText && <p className="mt-1.5 text-xs text-gray-500">{helpText}</p>}
     </div>
 );
 
-export const TextInput: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = (props) => (
-    <input
-        type="text"
-        {...props}
-        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-black placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:bg-gray-100"
-    />
-);
+export const TextInput: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = (props) => {
+  return <input {...props} className={`mt-1 block w-full px-2.5 py-1.5 bg-white border border-gray-300 rounded-md shadow-sm text-black placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 ${props.className}`} />;
+};
 
-export const TextArea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement>> = (props) => (
-    <textarea
-        {...props}
-        rows={4}
-        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-black placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:bg-gray-100"
-    />
-);
+export const TextArea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement>> = (props) => {
+  return <textarea {...props} className={`mt-1 block w-full px-2.5 py-1.5 bg-white border border-gray-300 rounded-md shadow-sm text-black placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500 ${props.className}`} />;
+};
 
 export default FormContainer;

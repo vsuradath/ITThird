@@ -11,9 +11,17 @@ import SatisfactionDashboard from './components/surveys/SatisfactionDashboard';
 import MyProjectsPage from './components/dashboard/MyProjectsPage';
 import DataDefinitionPage from './components/pages/DataDefinitionPage';
 import OverallDocumentFormPage from './components/pages/OverallDocumentFormPage';
+import ServiceApprovalPage from './components/pages/ServiceApprovalPage';
+import PoliciesAndRegulationsPage from './components/admin_pages/PoliciesAndRegulationsPage';
+import ManualsAndDocumentsPage from './components/admin_pages/ManualsAndDocumentsPage';
+import ITThirdPartyRegisterPage from './components/admin_pages/ITThirdPartyRegisterPage';
+import FourthPartyRegisterPage from './components/admin_pages/FourthPartyRegisterPage';
+import DataSetRegisterPage from './components/admin_pages/DataSetRegisterPage';
+import FourthPartyFormSetPage from './components/admin_pages/FourthPartyFormSetPage';
+import DataSetFormSetPage from './components/admin_pages/DataSetFormSetPage';
 
 const App: React.FC = () => {
-  const { currentUser, page, selectedProject, isLoading, error } = useContext(AppContext);
+  const { currentUser, page, selectedProject, isLoading, error, isSidebarOpen, toggleSidebar } = useContext(AppContext);
 
   if (!currentUser) {
     return <LoginPage />;
@@ -34,8 +42,8 @@ const App: React.FC = () => {
   // Handle global error state
   if (error) {
      return (
-        <div className="flex h-screen w-screen items-center justify-center bg-red-50 p-4">
-            <div className="text-center p-8 bg-white shadow-2xl rounded-lg border border-red-200">
+        <div className="flex h-screen w-screen items-center justify-center bg-red-50 p-3">
+            <div className="text-center p-6 bg-white shadow-2xl rounded-lg border border-red-200">
                 <h2 className="text-2xl font-bold text-red-600 mb-4">An Error Occurred</h2>
                 <p className="text-gray-700 max-w-md">{error}</p>
                  <button 
@@ -68,11 +76,28 @@ const App: React.FC = () => {
         return <SatisfactionDashboard />;
       case 'overallDocuments':
         return <OverallDocumentFormPage />;
+      case 'serviceApproval':
+        return <ServiceApprovalPage />;
       case 'submitSurvey':
         if (selectedProject) {
           return <SatisfactionSurveyPage />;
         }
         return <Dashboard />; // Fallback to dashboard
+      // New Admin Pages
+      case 'policiesAndRegulations':
+        return <PoliciesAndRegulationsPage />;
+      case 'manualsAndDocuments':
+        return <ManualsAndDocumentsPage />;
+      case 'itThirdPartyRegister':
+        return <ITThirdPartyRegisterPage />;
+      case 'fourthPartyRegister':
+        return <FourthPartyRegisterPage />;
+      case 'dataSetRegister':
+        return <DataSetRegisterPage />;
+      case 'fourthPartyFormSet':
+        return <FourthPartyFormSetPage />;
+      case 'dataSetFormSet':
+        return <DataSetFormSetPage />;
       default:
         return <Dashboard />;
     }
@@ -81,9 +106,9 @@ const App: React.FC = () => {
   const getTitle = () => {
     switch (page) {
       case 'dashboard':
-        return 'Overall Dashboard';
+        return currentUser?.role === 'admin' ? 'ภาพรวมในการรายงาน' : 'Overall Dashboard';
       case 'myProjects':
-        return currentUser?.role === 'admin' ? 'Overall Projects' : 'My Projects';
+        return currentUser?.role === 'admin' ? 'ระบบงานหรือโครงการ' : 'My Projects';
       case 'project':
         return selectedProject?.name || 'Project Details';
       case 'admin':
@@ -91,11 +116,28 @@ const App: React.FC = () => {
       case 'dataDefinition':
         return 'Data Definition';
       case 'satisfactionDashboard':
-        return 'Satisfaction Survey Dashboard';
+        return currentUser?.role === 'admin' ? 'แดชบอร์ดความพึงพอใจ' : 'Satisfaction Survey Dashboard';
       case 'overallDocuments':
-        return 'Overall Document Forms';
+        return 'ชุดแบบฟอร์ม IT Third Party';
+      case 'serviceApproval':
+        return 'New Third-Party Service Approval Request';
       case 'submitSurvey':
         return `Satisfaction Survey: ${selectedProject?.name || 'Project'}`;
+      // New Admin Page Titles
+      case 'policiesAndRegulations':
+        return 'นโยบายและระเบียบปฏิบัติ';
+      case 'manualsAndDocuments':
+        return 'คู่มือและเอกสารอื่นฯ';
+      case 'itThirdPartyRegister':
+        return 'ทะเบียน IT Third Party';
+      case 'fourthPartyRegister':
+        return 'ทะเบียน Fourth Party';
+      case 'dataSetRegister':
+        return 'ทะเบียน Data Set';
+      case 'fourthPartyFormSet':
+        return 'ชุดแบบฟอร์ม Fourth Party';
+      case 'dataSetFormSet':
+        return 'ชุดแบบฟอร์ม Data Set';
       default:
         return 'IT Third Party Document Management';
     }
@@ -103,14 +145,22 @@ const App: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-gray-100 font-sans">
-      <div className="print:hidden">
-        <Sidebar />
-      </div>
-      <div className="flex-1 flex flex-col overflow-hidden print:overflow-visible">
+      <Sidebar />
+
+      {/* Overlay for mobile */}
+      {isSidebarOpen && (
+        <div 
+          onClick={toggleSidebar} 
+          className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
+          aria-hidden="true"
+        ></div>
+      )}
+      
+      <div className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${isSidebarOpen ? 'md:ml-64' : 'md:ml-0'} print:ml-0 print:overflow-visible`}>
         <div className="print:hidden">
           <Header title={getTitle()} />
         </div>
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 md:p-8 print:p-0 print:bg-white">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-2 md:p-4 print:p-0 print:bg-white">
           <div className="container mx-auto max-w-7xl print:max-w-none print:m-0">
             {renderPage()}
           </div>

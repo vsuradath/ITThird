@@ -88,7 +88,7 @@ const ContractTermsForm: React.FC<Props> = ({
                 type="button"
                 onClick={() => window.print()}
                 disabled={!isFormComplete || isReadOnly}
-                className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-300 ease-in-out disabled:bg-gray-200 disabled:cursor-not-allowed disabled:text-gray-400"
+                className="inline-flex items-center justify-center px-5 py-2.5 border border-gray-300 text-base font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-300 ease-in-out disabled:bg-gray-200 disabled:cursor-not-allowed disabled:text-gray-400"
             >
                 PDF Review
             </button>
@@ -98,14 +98,14 @@ const ContractTermsForm: React.FC<Props> = ({
                     type="button"
                     onClick={handleSaveDraft}
                     disabled={isSavingDraft || isSubmitting}
-                    className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 ease-in-out disabled:bg-gray-200 disabled:cursor-not-allowed"
+                    className="inline-flex items-center justify-center px-5 py-2.5 border border-gray-300 text-base font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 ease-in-out disabled:bg-gray-200 disabled:cursor-not-allowed"
                 >
                     {isSavingDraft ? 'Saving...' : 'Save as Draft'}
                 </button>
                 <button
                     type="submit"
                     disabled={isSubmitting || isSavingDraft}
-                    className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 ease-in-out disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    className="inline-flex items-center justify-center px-5 py-2.5 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 ease-in-out disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                     {isSubmitting ? 'Submitting...' : "Submit for Review"}
                 </button>
@@ -144,7 +144,7 @@ const ContractTermsForm: React.FC<Props> = ({
                     {/* Assessor Column */}
                     <div>
                         <h3 className="text-lg font-bold text-black mb-4 text-center">ผู้ประเมิน</h3>
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             <div>
                                 <label className="block text-sm font-medium text-black mb-1">ผู้ประเมิน</label>
                                 <TextInput value={formData.assessorSignature?.name || ''} onChange={e => handleSignatureChange('assessorSignature', 'name', e.target.value)} disabled={isReadOnly} placeholder="(................)"/>
@@ -166,7 +166,7 @@ const ContractTermsForm: React.FC<Props> = ({
                     {/* Reviewer Column */}
                     <div>
                         <h3 className="text-lg font-bold text-black mb-4 text-center">ผู้สอบทาน</h3>
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             <div>
                                 <label className="block text-sm font-medium text-black mb-1">ผู้สอบทาน</label>
                                 <TextInput value={formData.reviewerSignature?.name || ''} disabled={true} placeholder="(................)"/>

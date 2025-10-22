@@ -33,8 +33,12 @@ interface AppContextType {
 
   page: Page;
   setPage: (page: Page) => void;
+  setPostLoginRedirect: (page: Page | null) => void;
   selectedProject: Project | null;
   setSelectedProject: (project: Project | null) => void;
+
+  isSidebarOpen: boolean;
+  toggleSidebar: () => void;
 
   isLoading: boolean;
   error: string | null;
@@ -50,10 +54,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [satisfactionSurveys, setSatisfactionSurveys] = useState<SatisfactionSurveySubmission[]>([]);
   const [formDefinitions, setFormDefinitions] = useState<FormDefinitions | null>(null);
   const [page, setPage] = useState<Page>('dashboard');
+  const [postLoginRedirect, setPostLoginRedirect] = useState<Page | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
 
   useEffect(() => {
     const loadData = async () => {
@@ -99,7 +107,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       setIsLoading(true);
       const user = await api.apiLogin(username, password);
       setCurrentUser(user);
-      setPage('dashboard');
+      if (postLoginRedirect) {
+        setPage(postLoginRedirect);
+        setPostLoginRedirect(null); // Reset after use
+      } else {
+        setPage('dashboard');
+      }
       return true;
     } catch (error) {
       console.error("Login failed:", error);
@@ -318,6 +331,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       if (p === 'dashboard') setSelectedProject(null);
       setPage(p);
     },
+    setPostLoginRedirect,
     selectedProject,
     setSelectedProject: (project: Project | null) => {
         setSelectedProject(project);
@@ -325,6 +339,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             setPage('project');
         }
     },
+    isSidebarOpen,
+    toggleSidebar,
     isLoading,
     error,
   };
